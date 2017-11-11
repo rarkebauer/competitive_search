@@ -13,7 +13,7 @@ where the piece will be dropped.
 
 const makeMove = (state) => {
 
-    // "state" is an object with a few methods 
+    // "state" is an object with a few methods
     // you might want to get o know.
     //
 	// Find whose move it is; 'x' or 'o'
@@ -92,11 +92,19 @@ const heuristic = (state, maximizingPlayer) => {
     // state.numLines, and adds weighted values... of something...
     // for the maximizer, and then substracts the same values for the
     // minimizer?
-    const linesOfLengthTwoForMax = state.numLines(2, maximizingPlayer)
-    const linesOfLengthTwoForMin = state.numLines(2, minimizingPlayer)
+    const linesTwoForMax = state.numLines(2, maximizingPlayer)
+		const linesTwoForMin = state.numLines(2, minimizingPlayer)
+
+		const linesThreeForMax = state.numLines(3, maximizingPlayer);
+		const linesThreeForMin = state.numLines(3, minimizingPlayer);
+
+		const lineFourForMax = state.numLines(4, maximizingPlayer);
+		const lineFourForMin = state.numLines(4, minimizingPlayer);
+
+		return (linesTwoForMax + (linesThreeForMax * 5) + (lineFourForMax * 20)) - linesTwoForMin - (linesThreeForMin * 5) - (lineFourForMin * 20);
 
     //Your code here.  Don't return random, obviously.
-	return Math.random()
+	//return Math.random()
 }
 
 
@@ -124,6 +132,7 @@ const minimax = (state, depth, maximizingPlayer) => {
 	var minimizingPlayer = (maximizingPlayer == 'x') ? 'o' : 'x';
 	var possibleStates = state.nextStates();
 	var currentPlayer = state.nextMovePlayer;
+	console.log(possibleStates);
     // Your code here.
     // Minimax is recursive, so you'll want to have
     // something like this:
@@ -131,8 +140,31 @@ const minimax = (state, depth, maximizingPlayer) => {
     //      return base case values with heuristic
     // } else {
     //      return non-base case
-    // }
-	return Math.random();
+		// }
+		  if (depth === 0 || state.nextStates.length === 0){
+				return heuristic(state, maximizingPlayer);
+			} if (currentPlayer === maximizingPlayer) {
+				var maxMove = -1000;
+				var whichMove = {};
+				for (var i = 0; i < possibleStates.length; i++) {
+					if (heuristic(possibleStates[i], currentPlayer) > maxMove) {
+						maxMove = heuristic(possibleStates[i], currentPlayer);
+						whichMove = possibleStates[i];
+					}
+				}
+				return minimax(whichMove, depth - 1, currentPlayer);
+			} else {
+				var minMove = 1000;
+				var whichMove = {};
+				for (var i = 0; i < possibleStates.length; i++) {
+					if (heuristic(possibleStates[i], currentPlayer) < minMove) {
+						minMove = heuristic(possibleStates[i], currentPlayer);
+						whichMove = possibleStates[i];
+					}
+				}
+				return minimax(whichMove, depth - 1, currentPlayer);
+			}
+	//return Math.random();
 }
 
 
