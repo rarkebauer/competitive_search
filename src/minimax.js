@@ -156,10 +156,10 @@ const minimax = (state, depth, maximizingPlayer) => {
 			} else {
 				var minMove = 1000;
 				var whichMove = {};
-				for (var i = 0; i < possibleStates.length; i++) {
-					if (heuristic(possibleStates[i], currentPlayer) < minMove) {
-						minMove = heuristic(possibleStates[i], currentPlayer);
-						whichMove = possibleStates[i];
+				for (var j = 0; j < possibleStates.length; j++) {
+					if (heuristic(possibleStates[j], currentPlayer) < minMove) {
+						minMove = heuristic(possibleStates[j], currentPlayer);
+						whichMove = possibleStates[j];
 					}
 				}
 				return minimax(whichMove, depth - 1, currentPlayer);
@@ -174,7 +174,9 @@ const minimax = (state, depth, maximizingPlayer) => {
 
    It is called with the same values with which minimax itself is called.*/
 const minimaxAlphaBetaWrapper = (state, depth, maximizingPlayer) => {
-
+	var minimizingPlayer = (maximizingPlayer == 'x') ? 'o' : 'x';
+	var possibleStates = state.nextStates();
+	var currentPlayer = state.nextMovePlayer;
     /*
     You will need to write minimaxAB for the extra credit.
     Input: state and depth are as they are before.  (Maximizing player
@@ -189,9 +191,30 @@ const minimaxAlphaBetaWrapper = (state, depth, maximizingPlayer) => {
     does; this is why it is a very high value to start with.
 	*/
 	const minimaxAB = (state, depth, alpha, beta) => {
+		if (depth === 0 || state.nextStates.length === 0){
+			return heuristic(state, maximizingPlayer);
+		} else if (currentPlayer === maximizingPlayer) {
+			for (var i = 0; i < possibleStates.length; i++){
+				if (heuristic(possibleStates[i]) > alpha){
+					alpha = possibleStates[i];
+				}
+				if (alpha > beta){
+					break;
+				}
+			}
+		} else {
+			for (var j = 0; j < possjbleStates.length; j++){
+				if (heuristic(possibleStates[j]) < beta){
+					beta = possibleStates[j];
+				}
+				if (beta < alpha){
+					break;
+				}
+			}
+		}
 	}
 
-	return minimaxAB(state, depth, -100000,100000);
+	return minimaxAB(state, depth, -100000, 100000);
 }
 
 module.exports = {makeMove, minimax, heuristic};
